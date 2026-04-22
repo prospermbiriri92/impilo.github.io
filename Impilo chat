@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impilo Chat</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  background: #111b21;
+  color:white;
+   display:flex;
+  justify-content:center;
+  align-items:center;
+}
+body.logged-in{
+  display:block;
+}
+/* Center ONLY login */
+
+
+/* ================= LOGIN ================= */
+.login-container{
+  width:350px;
+  padding:30px;
+  border-radius:20px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  text-align:center;
+}
+.app {
+  display: none;
+  height: 100vh;
+  width: 100%;
+}
+
+.app.active {
+  display: flex;
+}
+/* App name */
+
+.app-name{
+  font-size:14px;
+  opacity:0.6;
+  margin-bottom:5px;
+}
+
+.login-container h2{
+  margin-bottom:15px;
+}
+
+/* Avatar */
+.login-avatar { 
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  margin-bottom:10px;
+  border:3px solid rgba(255,255,255,0.2);
+  box-shadow:0 0 15px rgba(56,189,248,0.5);
+}
+
+/* Status text */
+.status{
+  font-size:13px;
+  color:#38bdf8;
+  margin-bottom:15px;
+  min-height:18px;
+}
+
+/* Inputs */
+.input-group{
+  margin-bottom:12px;
+  text-align:left;
+}
+
+.input-group input{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background: rgba(255,255,255,0.08);
+  color:white;
+}
+.signUp-btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background: linear-gradient(135deg,#38bdf8,#6366f1);
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+/* Button */
+.login-btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background: linear-gradient(135deg,#38bdf8,#6366f1);
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.login-btn:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+/* Spinner */
+.spinner{
+  width:18px;
+  height:18px;
+  border:2px solid rgba(255,255,255,0.2);
+  border-top:2px solid #38bdf8;
+  border-radius:50%;
+  animation: spin 1s linear infinite;
+  display:inline-block;
+  margin-left:5px;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+/* ================= CHAT ================= */
+
+
+.sidebar{
+  width:30%;
+  background:#111b21;
+  display:flex;
+  flex-direction:column;
+  border-right:1px solid #222;
+}
+
+.header{
+  padding:15px;
+  background:#202c33;
+  display:flex;
+  justify-content:space-between;
+}
+
+.search{
+  padding:10px;
+}
+
+.search input{
+  width:100%;
+  padding:10px;
+  border-radius:20px;
+  border:none;
+  background:#202c33;
+  color:white;
+}
+
+.chat-list{
+  flex:1;
+  overflow-y:auto;
+}
+
+.chat-item{
+  display:flex;
+  gap:10px;
+  padding:12px;
+  cursor:pointer;
+}
+
+.chat-item:hover{
+  background:#2a3942;
+}
+.chat-avatar { 
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#555;
+}
+
+.chat-info{
+  flex:1;
+}
+
+.chat-name{
+  font-weight:bold;
+}
+
+.chat-msg{
+  font-size:12px;
+  opacity:0.7;
+}
+/* CONTACT ITEM */
+.item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.item:hover{
+  background:#1f2c34;
+}
+
+/* Avatar */
+.contact-avatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#38bdf8,#6366f1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+
+/* Info */
+.contact-info{
+  flex:1;
+}
+
+.contact-name{
+  font-size:14px;
+  font-weight:600;
+}
+
+.contact-email{
+  font-size:11px;
+  opacity:0.6;
+}
+
+/* Right side */
+.contact-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* Unread badge */
+.badge{
+  background:#25d366;
+  color:black;
+  font-size:11px;
+  padding:3px 7px;
+  border-radius:50px;
+}
+
+/* Delete icon */
+.delete-btn{
+  color:#ff4d4d;
+  cursor:pointer;
+  font-size:14px;
+}
+/* CHAT AREA */
+.chat-area{
+  width:70%;
+  display:flex;
+  flex-direction:column;
+}
+
+.chat-header{
+  padding:15px;
+  background:#202c33;
+}
+
+.messages{
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.message{
+  max-width:65%;
+  padding:10px;
+  border-radius:10px;
+}
+
+.sent{
+  align-self:flex-end;
+  background:#005c4b;
+}
+
+.received{
+  align-self:flex-start;
+  background:#202c33;
+}
+
+.btn-group{
+  display:flex;
+  gap:10px;
+}
+
+.btn-group button{
+  flex:1;
+}
+.meta{
+  font-size:10px;
+  opacity:0.6;
+  margin-top:5px;
+  text-align:right;
+}
+
+/* INPUT */
+.input-area{
+  display:flex;
+  padding:10px;
+  background:#202c33;
+  gap:10px;
+}
+
+.input-area input{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:20px;
+  background:white;
+  color:black;
+}
+
+.send-btn{
+  background:#00a884;
+  border:none;
+  padding:10px 15px;
+  border-radius:50%;
+  cursor:pointer;
+}
+/* ================= MOBILE ================= */
+@media (max-width: 768px){
+
+  body{
+    display:block; /* remove center layout */
+  }
+
+  .login-container{
+    width:90%;
+    margin:40px auto;
+  }
+
+
+  .sidebar{
+    width:100%;
+    height:100vh;
+  }
+
+  .chat-area{
+    width:100%;
+    height:100vh;
+    display:none; /* hidden until chat opened */
+  }
+
+  /* when chat is active */
+  .chat-active .sidebar{
+    display:none;
+  }
+
+  .chat-active .chat-area{
+    display:flex;
+  }
+}
+
+.hidden{
+  display:none;
+}
+.image-viewer{
+  position: fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  background: rgba(0,0,0,0.95);
+
+  display:none; /* 👈 hidden by default */
+
+  justify-content:center;
+  align-items:center;
+
+  z-index:9999;
+}
+
+/* when active */
+.image-viewer.active{
+  display:flex;
+}
+
+.image-viewer img{
+  max-width:95%;
+  max-height:95%;
+  object-fit: contain; /* keeps full image visible */
+  border-radius:10px;
+}
+.close-btn{
+  position:absolute;
+  top:20px;
+  right:20px;
+  font-size:25px;
+  cursor:pointer;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="auth" class="login-container">
+  <div class="app-name">ChatConnect</div>
+  <img src="https://i.pravatar.cc/150?img=5" class="login-avatar">
+  <h2>Login / Sign Up</h2>
+  <div class="status" id="statusText"></div>
+  <div class="input-group">
+    <input id="email" type="email" placeholder="Email">
+  </div>
+  <div class="input-group">
+    <input id="password" type="password" placeholder="Password">
+  </div>
+  
+<div class="btn-group">
+  <button class="signUp-btn" onclick="signUp()">Sign Up</button>
+  <button class="login-btn" onclick="login()">Login</button>
+</div>
+</div>
+
+
+<!-- CHAT APP -->
+<div class="app" id="app">
+
+<div class="sidebar">
+    <div class="chat-header" id="chatHeaderLeft">
+  <span onclick="goBack()" style="cursor:pointer;">⬅</span>
+  <span id="chatName">Select chat</span>
+</div>
+ 
+    <div class="search">
+      <input placeholder="Search or start a new chat">
+    </div>
+    
+      <div>
+ <h3>👤 Contacts</h3>
+    <div id="contacts"></div>
+    <button class="add-btn" onclick="addContact()">+ Add Contact</button>
+       </div>
+         <div>
+    <h3>👥 Groups</h3>
+    <div id="groups"></div>
+    <button class="add-btn" onclick="createGroup()">+ New Group</button>
+           </div>
+       </div>
+ <!-- IMAGE VIEWER -->
+<div id="imageViewer" class="image-viewer ">
+  <span class="close-btn" onclick="closeImage()">✖</span>
+  <img id="viewerImg">
+</div>  
+  <!-- RIGHT -->
+  <div class="chat-area">
+
+<div class="chat-header" id="chatHeader">
+      Select chat
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="input-area">
+      <span>➕</span>
+      <input id="msg" placeholder="Type a message">
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+      <input type="file" id="fileInput" style="display:none">
+  <button onclick="document.getElementById('fileInput').click()">📎</button>
+  
+    </div>
+ 
+      <div id="users"></div>
+      
+  </div>
+
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+
+// 🔑 SUPABASE
+const supabase = createClient(
+  "https://oaofoprncxrimzitsaub.supabase.co",
+  "sb_publishable_m-2zavLsmhwP8avOPSSIGg_AT_auUq6"
+)
+
+// ELEMENTS
+const emailEl = document.getElementById("email")
+const passwordEl = document.getElementById("password")
+const box = document.getElementById("messages")
+const usersDiv = document.getElementById("users")
+
+let user = null
+let presenceChannel = null
+let shownMessages = new Set()
+let currentChat = null;
+// 🔥 CHAT STATE
+let currentChatId = null
+let currentChatName = ""
+
+// ✅ CHECK SESSION
+const { data: { session } } = await supabase.auth.getSession()
+if(session) showChat()
+
+/*////////////////////////////////////////////////////*/
+
+/* LOGIN FLOW */
+window.login = async () => {
+  const status = document.getElementById("statusText");
+
+  status.innerHTML = "Logging in <span class='spinner'></span>";
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: emailEl.value,
+    password: passwordEl.value
+  });
+
+  if(error){
+    status.innerText = error.message;
+  } else {
+    status.innerText = "Success!";
+    showChat();
+  }
+};
+
+window.logout = async () => {
+  await supabase.auth.signOut()
+  location.reload()
+}
+
+/*///////////*/
+window.signUp = async () => {
+  const { error } = await supabase.auth.signUp({
+    email: emailEl.value,
+    password: passwordEl.value
+  })
+
+  if(error) alert(error.message)
+  else alert("Check your email!")
+}
+
+function goBack(){
+  document.getElementById("app").classList.remove("chat-active");
+}
+
+
+const chatBackgrounds = {
+  default: "https://images.unsplash.com/photo-151436991641-6745cdb1723f",
+  group: "https://images.unsplash.com/photo-150752428034-b723cf961d3e"
+};
+// ================= UI =================
+
+/* CHAT */
+ async function showChat(){
+
+  document.getElementById("auth").classList.add("hidden");
+
+  const app = document.getElementById("app");
+  app.classList.add("active");
+
+  document.body.classList.add("logged-in");
+
+  const { data: { user: u } } = await supabase.auth.getUser();
+  user = u;
+
+  if(!user){
+    alert("No user session");
+    return;
+  }
+
+  loadContacts();
+  loadGroups();
+  setupPresence();
+}
+
+// ================= CONTACTS =================
+
+// ADD CONTACT
+window.addContact = async () => {
+  const email = prompt("Enter contact email:")
+  if(!email) return
+
+  const { data: existing } = await supabase
+    .from("contacts")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("contact_email", email)
+
+  if(existing && existing.length > 0){
+    alert("Already added")
+    return
+  }
+
+  await supabase.from("contacts").insert({
+    user_id: user.id,
+    contact_email: email
+  })
+
+  loadContacts()
+}
+
+// LOAD CONTACTS
+async function loadContacts(){
+  const { data, error } = await supabase
+    .from("contacts")
+    .select("*")
+    .eq("user_id", user.id)
+
+  if(error){
+    console.error("Contacts error:", error)
+    return
+  }
+
+  const container = document.getElementById("contacts")
+  container.innerHTML = ""
+
+  for (const c of data){
+
+    const chatId = [user.email, c.contact_email].sort().join("-")
+
+    let unreadCount = 0
+
+    const { data: unread } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("chat_id", chatId)
+      .eq("seen", false)
+      .neq("user_email", user.email)
+
+    unreadCount = unread ? unread.length : 0
+
+    const div = document.createElement("div")
+    div.className = "item"
+
+    div.innerHTML = `
+  <div class="contact-avatar">
+    ${c.contact_email[0].toUpperCase()}
+  </div>
+
+  <div class="contact-info">
+    <div class="contact-name">${c.contact_email.split("@")[0]}</div>
+    <div class="contact-email">${c.contact_email}</div>
+  </div>
+
+  <div class="contact-right">
+    ${unreadCount > 0 ? `<div class="badge">${unreadCount}</div>` : ""}
+    <div class="delete-btn">🗑</div>
+  </div>
+`
+
+    // 👉 OPEN CHAT
+    div.onclick = () => openPrivateChat(c.contact_email)
+
+    // 👉 DELETE CONTACT
+   div.querySelector(".delete-btn")
+      .onclick = async (e) => {
+        e.stopPropagation()
+
+        if(!confirm("Delete contact?")) return
+
+        await supabase
+          .from("contacts")
+          .delete()
+          .eq("id", c.id)
+
+        loadContacts()
+      }
+
+    container.appendChild(div) // ✅ VERY IMPORTANT
+  }
+}
+
+
+
+
+
+
+
+
+// ================= GROUPS =================
+
+// CREATE GROUP
+window.createGroup = async () => {
+  const name = prompt("Group name:")
+  if(!name) return
+
+  const { data: group } = await supabase
+    .from("groups")
+    .insert({
+      name,
+      created_by: user.id
+    })
+    .select()
+    .single()
+
+  // add yourself
+  await supabase.from("group_members").insert({
+    group_id: group.id,
+    user_id: user.id
+  })
+
+  alert("Group created!")
+  loadGroups()
+}
+
+// LOAD GROUPS
+async function loadGroups(){
+  const { data } = await supabase
+    .from("group_members")
+    .select("groups(id,name)")
+    .eq("user_id", user.id)
+
+  const container = document.getElementById("groups")
+  container.innerHTML = ""
+
+  data.forEach(g => {
+    const div = document.createElement("div")
+    div.className = "item"
+    if(!g.groups) return;
+    div.innerText = g.groups.name
+
+    div.onclick = () => openGroupChat(g.groups.id, g.groups.name)
+
+    container.appendChild(div)
+  })
+}
+
+// ================= CHAT =================
+
+// OPEN PRIVATE CHAT
+// OPEN FROM DEMO LIST
+function openChat(name){
+  openPrivateChat(name);
+}
+ function openPrivateChat(email){
+  currentChatId = [user.email, email].sort().join("-")
+  currentChatName = email
+
+ shownMessages.clear()
+       
+  console.log("OPEN CHAT:", currentChatId) // 👈 debug
+
+ document.getElementById("chatName").innerText = email;
+ document.getElementById("chatHeader").innerText = email;
+   
+   document.querySelector(".chat-area").style.background =
+  `url('${chatBackgrounds.default}') center/cover`;
+  
+  box.innerHTML = "" // clear old messages
+
+  loadMessages()
+  setupRealtime()
+  
+  document.getElementById("app").classList.add("chat-active");
+  
+}
+
+// OPEN GROUP CHAT
+function openGroupChat(id, name){
+  currentChatId = "group-" + id
+  currentChatName = name
+   
+   shownMessages.clear()
+
+document.getElementById("chatName").innerText = name;
+document.getElementById("chatHeader").innerText = name;
+     
+  document.querySelector(".chat-area").style.background =
+  `url('${chatBackgrounds.group}') center/cover`;
+
+  loadMessages()
+  setupRealtime()
+  
+  document.getElementById("app").classList.add("chat-active");
+}
+
+// SEND MESSAGE
+window.sendMessage = async () => {
+  const input = document.getElementById("msg")
+  const fileInput = document.getElementById("fileInput")
+
+  const msg = input.value.trim()
+  const file = fileInput.files[0]
+
+  if(!msg && !file){
+    alert("Type message or select file")
+    return
+  }
+
+  let fileUrl = null
+
+  if(file){
+    const fileName = Date.now() + "-" + file.name
+    const filePath = `${user.id}/${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from("chat-files")
+      .upload(filePath, file)
+
+    if(uploadError){
+      alert(uploadError.message)
+      return
+    }
+
+    const { data } = supabase.storage
+      .from("chat-files")
+      .getPublicUrl(filePath)
+
+    fileUrl = data.publicUrl
+  }
+
+  const { data, error } = await supabase
+    .from("messages")
+    .insert({
+      chat_id: currentChatId,
+      content: msg,
+      user_email: user.email,
+      file_url: fileUrl,
+      seen: false
+    })
+    .select()
+    .single();
+
+  if(error){
+    alert(error.message)
+    return
+  }
+
+  addMessage(data)
+
+  input.value = ""
+  fileInput.value = ""
+}
+
+// LOAD MESSAGES
+// LOAD MESSAGES
+async function loadMessages(){
+  if(!currentChatId) return;
+
+  const { data, error } = await supabase
+    .from("messages")
+    .select("*")
+    .eq("chat_id", currentChatId)
+    .order("created_at", { ascending: true });
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  box.innerHTML = "";
+  data.forEach(addMessage);
+
+  await supabase
+    .from("messages")
+    .update({ seen: true })
+    .eq("chat_id", currentChatId)
+    .neq("user_email", user.email);
+}
+// ADD MESSAGE UI
+function addMessage(m){
+
+  if(shownMessages.has(m.id)) return
+  shownMessages.add(m.id)
+
+  const div = document.createElement("div")
+
+  const isMine = m.user_email === user.email
+  div.className = "message " + (isMine ? "sent" : "received")
+
+  const time = new Date(m.created_at).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+
+  const ticks = isMine ? (m.seen ? "✓✓" : "✓") : ""
+
+  div.innerHTML = `
+    <b>${m.user_email}</b><br>
+    ${m.content || ""}
+${m.file_url ? renderFile(m.file_url) : ""}
+    <div style="font-size:10px;opacity:0.6;margin-top:5px;">
+      ${time} ${ticks}
+    </div>
+  `
+
+  box.appendChild(div)
+  box.scrollTop = box.scrollHeight
+}
+
+
+
+function renderFile(url){
+
+  if(!url) return ""
+
+  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(url)
+
+  if(isImage){
+    return `
+      <br>
+      <img 
+        src="${url}" 
+        onclick="openImage('${url}')"
+        style="
+          max-width:250px;
+          width:100%;
+          border-radius:10px;
+          margin-top:5px;
+          cursor:pointer;
+        ">
+    `
+  }
+
+  return `
+    <br>
+    <a href="${url}" target="_blank" style="color:#4da6ff;">
+      📎 Open File
+    </a>
+  `
+}
+// ================= REALTIME =================
+
+// FIXED REALTIME PER CHAT
+let chatChannel = null
+
+function setupRealtime(){
+
+  // ❗ remove old channel
+  if(chatChannel){
+    supabase.removeChannel(chatChannel)
+  }
+
+  chatChannel = supabase
+    .channel("chat-" + currentChatId)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
+        filter: `chat_id=eq.${currentChatId}`
+      },
+      payload => {
+        addMessage(payload.new)
+        loadContacts() // update unread badges
+      }
+    )
+    .subscribe()
+}
+
+// ================= PRESENCE =================
+
+// ACTIVE USERS
+function setupPresence(){
+  presenceChannel = supabase.channel("online-users", {
+    config: { presence: { key: user.id } }
+  })
+
+  presenceChannel.on("presence", { event: "sync" }, () => {
+    const state = presenceChannel.presenceState()
+    updateUsers(state)
+  })
+
+  presenceChannel.subscribe(async (status) => {
+    if(status === "SUBSCRIBED"){
+      await presenceChannel.track({
+        user_email: user.email
+      })
+    }
+  })
+}
+
+// UPDATE USER LIST
+function updateUsers(state){
+
+  usersDiv.innerHTML = "<b>🟢 Active Users:</b><br>"
+
+  Object.values(state).forEach(users => {
+    users.forEach(u => {
+      usersDiv.innerHTML += `• ${u.user_email}<br>`
+    })
+  })
+}
+
+let startX = 0;
+let endX = 0;
+
+const chatArea = document.querySelector(".chat-area");
+
+chatArea.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].clientX;
+});
+
+chatArea.addEventListener("touchmove", (e) => {
+  endX = e.touches[0].clientX;
+});
+
+chatArea.addEventListener("touchend", () => {
+  let diff = endX - startX;
+
+  // 👉 swipe right (go back)
+  if(diff > 80){
+    goBack();
+  }
+});
+window.openImage = function(url){
+  const viewer = document.getElementById("imageViewer");
+  document.getElementById("viewerImg").src = url;
+  viewer.classList.add("active");
+}
+
+window.closeImage = function(){
+  document.getElementById("imageViewer").classList.remove("active");
+}
+
+// click outside image = close
+document.getElementById("imageViewer").onclick = function(e){
+  if(e.target.id === "imageViewer"){
+    closeImage();
+  }
+}
+
+</script>
+  
+  
+</body>
+</html>
